@@ -73,7 +73,7 @@ The agent never touches your token. It just says "run this command with that cre
 ### 1. Start the server
 
 ```bash
-git clone https://github.com/anthropics/Agent-Credential-Vault.git
+git clone https://github.com/MCPFence/Agent-Credential-Vault.git
 cd Agent-Credential-Vault
 npm install
 npm run build
