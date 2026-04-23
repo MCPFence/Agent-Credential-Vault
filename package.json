@@ -1,0 +1,25 @@
+{
+  "name": "agent-credential-vault",
+  "version": "1.0.0",
+  "description": "Agent Credential Vault — Agent credential and policy management console",
+  "main": "main.js",
+  "scripts": {
+    "dev": "vite dev --config src/renderer/vite.config.js",
+    "build": "vite build --config src/renderer/vite.config.js",
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "@noble/ed25519": "^2.1.0",
+    "express": "^4.21.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.0",
+    "autoprefixer": "^10.4.20",
+    "lucide-react": "^0.453.0",
+    "postcss": "^8.4.47",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^3.4.13",
+    "vite": "^5.4.0"
+  }
+}

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Credential Vault — Agent 凭证管家</title>
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/product.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>body{font-family:'Noto Sans SC','Inter',system-ui,sans-serif}</style>
+</head>
+<body>
+
+    <!-- ====== Navigation ====== -->
+    <nav class="nav" id="nav">
+        <div class="nav-inner">
+            <a href="#hero" class="nav-logo">
+                <span class="logo-icon">&#9670;</span> ACV
+            </a>
+            <div class="nav-links">
+                <a href="#problems" data-section="problems">痛点</a>
+                <a href="#solution" data-section="solution">核心方案</a>
+                <a href="#features" data-section="features">产品亮点</a>
+                <a href="#how" data-section="how">快速上手</a>
+                <a href="login.html">控制台</a>
+                <a href="index.html" style="opacity:0.6;">EN</a>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="展开菜单">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ====== 1. Hero ====== -->
+    <section class="p-hero" id="hero">
+        <div class="p-hero-bg"></div>
+        <div class="p-hero-content p-reveal">
+            <div class="p-hero-badge">Agent 凭证管家</div>
+            <h1>Agent 凭证管家</h1>
+            <p class="p-hero-sub">
+                你的 Agent 需要账号密码才能干活，但你不想把密码直接给它。<br>
+                <strong>凭证管家帮你管</strong> —— Agent 能用，但看不见、带不走、用完自动收回。
+            </p>
+            <div class="p-hero-actions">
+                <a href="#how" class="p-btn p-btn-primary">快速上手</a>
+                <a href="#problems" class="p-btn p-btn-ghost">了解我们解决的问题</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== 2. Problems ====== -->
+    <section class="p-section" id="problems">
+        <div class="container">
+            <div class="p-section-header p-reveal">
+                <span class="tag">Core Problem</span>
+                <h2>Agent 使用凭证的 3 个致命问题</h2>
+                <p>没有管家管控，你的每个账号都在"裸奔"</p>
+            </div>
+
+            <div class="p-problems">
+                <!-- 痛点 1 -->
+                <div class="p-problem-card p-reveal">
+                    <div class="p-problem-icon">&#128275;</div>
+                    <h3>凭证裸奔</h3>
+                    <p>
+                        API Key 直接粘贴到 prompt 里，Token 明文写在 .env 文件中。
+                        Agent 的整个上下文窗口都能看到你的密码 —— 包括日志、调试输出、甚至被注入的恶意 prompt。
+                    </p>
+                    <div class="p-problem-before">
+                        $ export OPENAI_API_KEY=sk-proj-abc123...<br>
+                        $ python agent.py &nbsp;# Agent 可以 print(os.environ["OPENAI_API_KEY"])
+                    </div>
+                </div>
+
+                <!-- 痛点 2 -->
+                <div class="p-problem-card p-reveal">
+                    <div class="p-problem-icon">&#9888;</div>
+                    <h3>权限失控</h3>
+                    <p>
+                        你给了 Agent 一个 GitHub Token，本意只让它读代码。
+                        但这个 Token 有 repo 全部权限 —— 删分支、改 workflow、推送恶意代码，Agent 都能做。
+                        没有任何机制约束它只做你要求的事。
+                    </p>
+                    <div class="p-problem-before">
+                        scope: repo (full control) &nbsp;&#8592; 你只想让它 git clone
+                    </div>
+                </div>
+
+                <!-- 痛点 3 -->
+                <div class="p-problem-card p-reveal">
+                    <div class="p-problem-icon">&#128065;</div>
+                    <h3>无法追踪 &amp; 无法收回</h3>
+                    <p>
+                        Agent 什么时候用了你的 Gmail Token？读了哪些邮件？发了什么消息？
+                        你完全不知道。更糟糕的是，Agent 拿到密码后永远持有 —— 任务结束了，密码还在它手里。
+                    </p>
+                    <div class="p-problem-before">
+                        Task finished 30 min ago... Token still valid... No audit log.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== 3. Solution — "可用不可见" ====== -->
+    <section class="p-section p-section-dark" id="solution">
+        <div class="container">
+            <div class="p-section-header p-reveal">
+                <span class="tag">Core Solution</span>
+                <h2>凭证管家的核心能力 — 可用不可见</h2>
+                <p>管家替 Agent 操办一切凭证事务，Agent 全程接触不到明文。这不是妥协，是管家的本分。</p>
+            </div>
+
+            <div class="p-compare p-reveal" style="margin-bottom: 48px;">
+                <div class="p-compare-col p-compare-before">
+                    <div class="p-compare-label">Before &mdash; 没有管家</div>
+                    <div class="p-code">
+                        <span class="cmt"># Agent 直接拿到明文密码</span><br>
+                        <span class="cmd">token</span> = vault.get(<span class="str">"gmail_oauth"</span>)<br>
+                        <span class="cmd">print</span>(token)<br>
+                        <span class="cmt"># &rarr; ya29.a0AfB_byC8x...</span><br>
+                        <span class="cmt"># Agent 看到了！日志看到了！</span><br>
+                        <span class="cmt"># Prompt injection 也看到了！</span>
+                    </div>
+                </div>
+                <div class="p-compare-col p-compare-after">
+                    <div class="p-compare-label">After &mdash; 凭证管家</div>
+                    <div class="p-code">
+                        <span class="cmt"># Agent 只执行命令，看不到密码</span><br>
+                        <span class="cmd">ais exec</span> <span class="flag">--cred</span> vcred_xxx <span class="flag">\</span><br>
+                        &nbsp;&nbsp;<span class="flag">--env</span> TOKEN=access_token <span class="flag">\</span><br>
+                        &nbsp;&nbsp;<span class="flag">--</span> curl <span class="flag">-H</span> <span class="str">"Bearer $TOKEN"</span> api.gmail.com<br>
+                        <span class="cmt"># &rarr; 正常返回邮件数据</span><br>
+                        <span class="cmt"># Agent 全程看不到 Token 明文</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-solution-flow p-reveal">
+                <div class="p-solution-highlight">
+                    <p>Agent 能用凭证办事，但全程接触不到明文。用完自动收回，Prompt Injection 也拿不走。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== 4. Features ====== -->
+    <section class="p-section" id="features">
+        <div class="container">
+            <div class="p-section-header p-reveal">
+                <span class="tag">Product Highlights</span>
+                <h2>管家的 6 项承诺</h2>
+                <p>每一个设计决策，都是为了让你在 AI Agent 时代保持掌控</p>
+            </div>
+
+            <div class="p-features">
+                <!-- Feature 1 -->
+                <div class="p-feature-card p-reveal">
+                    <div class="p-feature-icon fi-1">&#128274;</div>
+                    <h3>可用不可见</h3>
+                    <p>
+                        <code>ais exec</code> 将凭证注入到子进程的环境变量中，Agent（父进程）无法读取。
+                        子进程的输出经过实时清洗，任何泄漏的明文都被替换为 <code>[AIS:REDACTED]</code>。
+                    </p>
+                    <span class="p-feature-tag">ais exec --cred &lt;id&gt; -- command</span>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="p-feature-card p-reveal">
+                    <div class="p-feature-icon fi-2">&#9200;</div>
+                    <h3>用完即释放</h3>
+                    <p>
+                        任务结束调用 <code>ais task finish</code>，所有凭证访问权立即失效。
+                        不存在"Agent 永久持有密码"的问题。凭证的生命周期 = 任务的生命周期。
+                    </p>
+                    <span class="p-feature-tag">task finish &rarr; all tokens revoked</span>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="p-feature-card p-reveal">
+                    <div class="p-feature-icon fi-3">&#128209;</div>
+                    <h3>全程审计</h3>
+                    <p>
+                        每次凭证使用都记录：哪个 Agent、用了哪个凭证、什么时间、为什么目的。
+                        完整的审计链让你随时回溯，清楚知道你的账号发生了什么。
+                    </p>
+                    <span class="p-feature-tag">who + what + when + why</span>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="p-feature-card p-reveal">
+                    <div class="p-feature-icon fi-4">&#127760;</div>
+                    <h3>一个工具，全场景覆盖</h3>
+                    <p>
+                        不管是 curl 调 HTTP API、Python 脚本初始化 SDK、Node.js 读 Notion、还是 kubectl 管集群
+                        —— <code>ais exec</code> 一个命令搞定所有场景。
+                    </p>
+                    <span class="p-feature-tag">HTTP / Python / Node / Go / Shell</span>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="p-feature-card p-reveal">
+                    <div class="p-feature-icon fi-5">&#128241;</div>
+                    <h3>设备 + 应用绑定</h3>
+                    <p>
+                        每个 Agent 身份绑定到一台设备 + 一个应用。身份文件无法拷贝到其他机器使用。
+                        丢了一台设备？撤销该设备的身份，不影响其他设备。
+                    </p>
+                    <span class="p-feature-tag">1 device + 1 app = 1 identity</span>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="p-feature-card p-reveal">
+                    <div class="p-feature-icon fi-6">&#128736;</div>
+                    <h3>桌面应用 + CLI 双通道</h3>
+                    <p>
+                        <strong>桌面应用</strong>可视化管理凭证、审批 Agent、查看审计日志 —— 点点鼠标就能掌控一切。
+                        <strong>Go CLI</strong> 让 Agent 在 Claude Code、Cursor、终端中通过命令行安全使用凭证。
+                    </p>
+                    <span class="p-feature-tag">Desktop App + ais CLI</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== 5. How It Works ====== -->
+    <section class="p-section p-section-dark" id="how">
+        <div class="container">
+            <div class="p-section-header p-reveal">
+                <span class="tag">Quick Start</span>
+                <h2>一步开始</h2>
+                <p>下载 Skill，Agent 即刻拥有凭证管家能力</p>
+            </div>
+
+            <div class="p-steps" style="grid-template-columns: 1fr;">
+                <div class="p-step p-reveal" style="max-width: 720px; margin: 0 auto;">
+                    <div class="p-step-num">&#10003;</div>
+                    <h3>下载 Agent Identity Skill</h3>
+                    <p>
+                        Skill 包含跨平台 CLI 二进制 + 完整使用指南。<br>
+                        将 Skill 添加到你的 Agent 项目中（Claude Code / Cursor / 任意 AI IDE），Agent 自动获得身份注册、凭证申请、安全执行的全部能力。
+                    </p>
+                    <div class="p-code">
+                        <span class="cmt"># Skill 目录结构</span><br>
+                        ais-agent-auth/<br>
+                        &nbsp;&nbsp;├── <span class="str">SKILL.md</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cmt"># Agent 使用指南（自动加载）</span><br>
+                        &nbsp;&nbsp;├── bin/<br>
+                        &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── darwin-arm64/ais&nbsp;<span class="cmt"># macOS Apple Silicon</span><br>
+                        &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── darwin-amd64/ais&nbsp;<span class="cmt"># macOS Intel</span><br>
+                        &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── linux-amd64/ais&nbsp;&nbsp;<span class="cmt"># Linux x86_64</span><br>
+                        &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── linux-arm64/ais&nbsp;&nbsp;<span class="cmt"># Linux ARM64</span><br>
+                        &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── windows-amd64/ais.exe<br>
+                        &nbsp;&nbsp;└── <span class="str">REFERENCE_SCOPES.md</span>&nbsp;<span class="cmt"># 权限参考</span>
+                    </div>
+                    <div style="text-align: center; margin-top: 24px;">
+                        <a href="/api/v1/skill/download" class="p-btn p-btn-primary" download>下载 Skill</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 更多场景示例 -->
+            <div class="p-solution-flow p-reveal" style="margin-top: 16px;">
+                <h3 style="text-align:center; margin-bottom: 24px; color: var(--text);">更多使用场景</h3>
+                <div class="p-code">
+                    <span class="cmt"># Python SDK 初始化 — Agent 看不到 API Key</span><br>
+                    <span class="cmd">ais exec</span> <span class="flag">--cred</span> vcred_openai <span class="flag">--env</span> OPENAI_API_KEY=api_key <span class="flag">--</span> python my_agent.py<br><br>
+
+                    <span class="cmt"># Notion Cookie 注入 — Agent 看不到 Cookie</span><br>
+                    <span class="cmd">ais exec</span> <span class="flag">--cred</span> vcred_notion <span class="flag">--env</span> COOKIES=cookies <span class="flag">--</span> node notion_reader.js<br><br>
+
+                    <span class="cmt"># 多凭证同时使用</span><br>
+                    <span class="cmd">ais exec</span> <span class="flag">--cred</span> vcred_gh <span class="flag">--env</span> GH=api_key <span class="flag">\\</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="flag">--cred</span> vcred_slack <span class="flag">--env</span> SLACK=access_token <span class="flag">\\</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="flag">--</span> python multi_service.py<br><br>
+
+                    <span class="cmt"># 凭证写入临时文件（如 kubeconfig）— 命令结束后自动删除</span><br>
+                    <span class="cmd">ais exec</span> <span class="flag">--cred</span> vcred_k8s <span class="flag">--file</span> /tmp/.kube/config=kubeconfig_data <span class="flag">--</span> kubectl get pods
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== 6. Security Highlights ====== -->
+    <section class="p-section" id="security">
+        <div class="container">
+            <div class="p-section-header p-reveal">
+                <span class="tag">Security</span>
+                <h2>安全不是附加功能，是管家的底线</h2>
+            </div>
+
+            <div class="p-compare p-reveal" style="max-width: 960px;">
+                <div class="p-compare-col p-compare-before">
+                    <div class="p-compare-label">没有凭证管家</div>
+                    <table style="width:100%; font-size: 0.9rem; color: var(--text-2);">
+                        <tr><td style="padding: 8px 0;">凭证存储</td><td style="color:var(--danger);">.env 明文 / prompt 粘贴</td></tr>
+                        <tr><td style="padding: 8px 0;">Agent 身份</td><td style="color:var(--danger);">共享 API Key，不可区分</td></tr>
+                        <tr><td style="padding: 8px 0;">权限边界</td><td style="color:var(--danger);">全局 Token，无法收窄</td></tr>
+                        <tr><td style="padding: 8px 0;">凭证生命周期</td><td style="color:var(--danger);">永久有效，手动轮换</td></tr>
+                        <tr><td style="padding: 8px 0;">审计追踪</td><td style="color:var(--danger);">无</td></tr>
+                        <tr><td style="padding: 8px 0;">Prompt Injection</td><td style="color:var(--danger);">泄漏凭证明文</td></tr>
+                    </table>
+                </div>
+                <div class="p-compare-col p-compare-after">
+                    <div class="p-compare-label">使用凭证管家</div>
+                    <table style="width:100%; font-size: 0.9rem; color: var(--text-2);">
+                        <tr><td style="padding: 8px 0;">凭证存储</td><td style="color:var(--success);">AES-GCM 加密保险箱</td></tr>
+                        <tr><td style="padding: 8px 0;">Agent 身份</td><td style="color:var(--success);">独立 Ed25519 密钥对</td></tr>
+                        <tr><td style="padding: 8px 0;">权限边界</td><td style="color:var(--success);">Scope 粒度 + 任务边界</td></tr>
+                        <tr><td style="padding: 8px 0;">凭证生命周期</td><td style="color:var(--success);">任务结束即失效</td></tr>
+                        <tr><td style="padding: 8px 0;">审计追踪</td><td style="color:var(--success);">谁 + 什么 + 何时 + 为何</td></tr>
+                        <tr><td style="padding: 8px 0;">Prompt Injection</td><td style="color:var(--success);">Agent 接触不到明文</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== 7. CTA ====== -->
+    <section class="p-cta" id="cta">
+        <div class="container">
+            <div class="p-reveal">
+                <h2>让凭证管家替你守护</h2>
+                <p>一个桌面应用管理凭证，一条命令安全执行。<br>你的账号，你做主。</p>
+                <div class="p-cta-actions">
+                    <a href="login.html" class="p-btn p-btn-ghost">管理控制台</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== Footer ====== -->
+    <footer class="p-footer">
+        <div class="container">
+            Agent Credential Vault &mdash; Agent 凭证管家 &nbsp;|&nbsp;
+            <a href="login.html">管理控制台</a>
+        </div>
+    </footer>
+
+    <script src="js/product.js"></script>
+</body>
+</html>

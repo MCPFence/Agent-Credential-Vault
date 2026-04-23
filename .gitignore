@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+.env
+.ais-data/
+.skill-download.zip
+
+# Skill binaries (large)
+# skill/bin/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

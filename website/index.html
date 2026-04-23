@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Credential Vault — The Credential Butler for Your AI Agents</title>
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/product.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>body{font-family:'Inter',system-ui,sans-serif}</style>
+</head>
+<body>
+
+    <!-- ====== Navigation ====== -->
+    <nav class="nav" id="nav">
+        <div class="nav-inner">
+            <a href="#hero" class="nav-logo">
+                <span class="logo-icon">&#9670;</span> ACV
+            </a>
+            <div class="nav-links">
+                <a href="#problems" data-section="problems">Problems</a>
+                <a href="#solution" data-section="solution">Solution</a>
+                <a href="#features" data-section="features">Features</a>
+                <a href="#how" data-section="how">Get Started</a>
+                <a href="login.html">Console</a>
+                <a href="zh.html" style="opacity:0.6;">中文</a>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ====== 1. Hero ====== -->
+    <section class="p-hero" id="hero">
+        <div class="p-hero-bg"></div>
+        <div class="p-hero-content p-reveal">
+            <div class="p-hero-badge">Agent Credential Vault</div>
+            <h1>The Credential Butler<br>for Your AI Agents</h1>
+            <p class="p-hero-sub">
+                Your agents need passwords, tokens, and API keys to do their job.<br>
+                <strong>The Credential Butler handles it</strong> &mdash; agents can use credentials, but can't see, copy, or keep them.
+            </p>
+            <div class="p-hero-actions">
+                <a href="#how" class="p-btn p-btn-primary">Get Started</a>
+                <a href="#problems" class="p-btn p-btn-ghost">See the Problem</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== 2. Problems ====== -->
+    <section class="p-section" id="problems">
+        <div class="container">
+            <div class="p-section-header p-reveal">
+                <span class="tag">Core Problem</span>
+                <h2>3 Fatal Flaws in How Agents Use Credentials</h2>
+                <p>Without a butler, every credential you hand to an agent is a liability</p>
+            </div>
+
+            <div class="p-problems">
+                <div class="p-problem-card p-reveal">
+                    <div class="p-problem-icon">&#128275;</div>
+                    <h3>Credentials in Plain Sight</h3>
+                    <p>
+                        API keys pasted into prompts. Tokens stored in .env files.
+                        The agent's entire context window can see your secrets &mdash; including logs, debug output, and injected prompts.
+                    </p>
+                    <div class="p-problem-before">
+                        $ export OPENAI_API_KEY=sk-proj-abc123...<br>
+                        $ python agent.py &nbsp;# Agent can print(os.environ["OPENAI_API_KEY"])
+                    </div>
+                </div>
+
+                <div class="p-problem-card p-reveal">
+                    <div class="p-problem-icon">&#9888;</div>
+                    <h3>Permissions Out of Control</h3>
+                    <p>
+                        You gave your agent a GitHub token just to read code.
+                        But that token has full repo access &mdash; delete branches, modify workflows, push malicious code. Nothing stops it.
+                    </p>
+                    <div class="p-problem-before">
+                        scope: repo (full control) &nbsp;&#8592; you only wanted git clone
+                    </div>
+                </div>
+
+                <div class="p-problem-card p-reveal">
+                    <div class="p-problem-icon">&#128065;</div>
+                    <h3>No Tracking &amp; No Revocation</h3>
+                    <p>
+                        When did your agent use your Gmail token? What emails did it read?
+                        You have no idea. Worse: the agent keeps the password forever &mdash; task done, token still alive.
+                    </p>
+                    <div class="p-problem-before">
+                        Task finished 30 min ago... Token still valid... No audit log.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== 3. Solution ====== -->
+    <section class="p-section p-section-dark" id="solution">
+        <div class="container">
+            <div class="p-section-header p-reveal">
+                <span class="tag">Core Solution</span>
+                <h2>Use Without Seeing</h2>
+                <p>The butler handles all credential operations. The agent never touches the plaintext.</p>
+            </div>
+
+            <div class="p-compare p-reveal" style="margin-bottom: 48px;">
+                <div class="p-compare-col p-compare-before">
+                    <div class="p-compare-label">Before &mdash; No Butler</div>
+                    <div class="p-code">
+                        <span class="cmt"># Agent gets the plaintext password</span><br>
+                        <span class="cmd">token</span> = vault.get(<span class="str">"gmail_oauth"</span>)<br>
+                        <span class="cmd">print</span>(token)<br>
+                        <span class="cmt"># &rarr; ya29.a0AfB_byC8x...</span><br>
+                        <span class="cmt"># Agent sees it! Logs see it!</span><br>
+                        <span class="cmt"># Prompt injection sees it too!</span>
+                    </div>
+                </div>
+                <div class="p-compare-col p-compare-after">
+                    <div class="p-compare-label">After &mdash; Credential Butler</div>
+                    <div class="p-code">
+                        <span class="cmt"># Agent runs the command, can't see the password</span><br>
+                        <span class="cmd">ais exec</span> <span class="flag">--cred</span> vcred_xxx <span class="flag">\</span><br>
+                        &nbsp;&nbsp;<span class="flag">--env</span> TOKEN=access_token <span class="flag">\</span><br>
+                        &nbsp;&nbsp;<span class="flag">--</span> curl <span class="flag">-H</span> <span class="str">"Bearer $TOKEN"</span> api.gmail.com<br>
+                        <span class="cmt"># &rarr; Returns email data normally</span><br>
+                        <span class="cmt"># Agent never sees the token plaintext</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-solution-flow p-reveal">
+                <div class="p-solution-highlight">
+                    <p>Agents use credentials to get work done, but never touch the plaintext. Auto-revoked when done. Safe from prompt injection.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== 4. Features ====== -->
+    <section class="p-section" id="features">
+        <div class="container">
+            <div class="p-section-header p-reveal">
+                <span class="tag">Product Highlights</span>
+                <h2>6 Promises from Your Butler</h2>
+                <p>Every design choice is about keeping you in control in the age of AI agents</p>
+            </div>
+
+            <div class="p-features">
+                <div class="p-feature-card p-reveal">
+                    <div class="p-feature-icon fi-1">&#128274;</div>
+                    <h3>Use Without Seeing</h3>
+                    <p>
+                        <code>ais exec</code> injects credentials into a subprocess's environment. The agent (parent process) cannot read them.
+                        Output is scrubbed in real time &mdash; any leaked secret is replaced with <code>[AIS:REDACTED]</code>.
+                    </p>
+                    <span class="p-feature-tag">ais exec --cred &lt;id&gt; -- command</span>
+                </div>
+
+                <div class="p-feature-card p-reveal">
+                    <div class="p-feature-icon fi-2">&#9200;</div>
+                    <h3>Auto-Revoke on Finish</h3>
+                    <p>
+                        When the task ends, all credential access is instantly revoked.
+                        No "agent still holds the password" problem. Credential lifetime = task lifetime.
+                    </p>
+                    <span class="p-feature-tag">task finish &rarr; all tokens revoked</span>
+                </div>
+
+                <div class="p-feature-card p-reveal">
+                    <div class="p-feature-icon fi-3">&#128209;</div>
+                    <h3>Full Audit Trail</h3>
+                    <p>
+                        Every credential use is logged: which agent, which credential, when, and why.
+                        A complete audit chain so you always know what happened with your accounts.
+                    </p>
+                    <span class="p-feature-tag">who + what + when + why</span>
+                </div>
+
+                <div class="p-feature-card p-reveal">
+                    <div class="p-feature-icon fi-4">&#127760;</div>
+                    <h3>One Tool, Every Scenario</h3>
+                    <p>
+                        Whether it's curl for HTTP, Python initializing an SDK, Node.js reading Notion, or kubectl managing a cluster
+                        &mdash; <code>ais exec</code> covers them all with a single command.
+                    </p>
+                    <span class="p-feature-tag">HTTP / Python / Node / Go / Shell</span>
+                </div>
+
+                <div class="p-feature-card p-reveal">
+                    <div class="p-feature-icon fi-5">&#128241;</div>
+                    <h3>Device + App Binding</h3>
+                    <p>
+                        Each agent identity is bound to one device and one app. Identity files can't be copied to another machine.
+                        Lost a device? Revoke that identity &mdash; others remain unaffected.
+                    </p>
+                    <span class="p-feature-tag">1 device + 1 app = 1 identity</span>
+                </div>
+
+                <div class="p-feature-card p-reveal">
+                    <div class="p-feature-icon fi-6">&#128736;</div>
+                    <h3>Desktop App + CLI</h3>
+                    <p>
+                        <strong>Desktop app</strong> to manage credentials, approve agents, and view audit logs visually.
+                        <strong>Go CLI</strong> for agents to securely use credentials from Claude Code, Cursor, or any terminal.
+                    </p>
+                    <span class="p-feature-tag">Desktop App + ais CLI</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== 5. Get Started ====== -->
+    <section class="p-section p-section-dark" id="how">
+        <div class="container">
+            <div class="p-section-header p-reveal">
+                <span class="tag">Quick Start</span>
+                <h2>One Step to Start</h2>
+                <p>Download the Skill, and your agent instantly gets a credential butler</p>
+            </div>
+
+            <div class="p-steps" style="grid-template-columns: 1fr;">
+                <div class="p-step p-reveal" style="max-width: 720px; margin: 0 auto;">
+                    <div class="p-step-num">&#10003;</div>
+                    <h3>Download the Agent Identity Skill</h3>
+                    <p>
+                        The Skill includes cross-platform CLI binaries and a complete usage guide.<br>
+                        Add it to your agent's project (Claude Code / Cursor / any AI IDE). The agent automatically gains identity registration, credential requests, and secure execution.
+                    </p>
+                    <div class="p-code">
+                        <span class="cmt"># Skill directory structure</span><br>
+                        ais-agent-auth/<br>
+                        &nbsp;&nbsp;├── <span class="str">SKILL.md</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cmt"># Agent guide (auto-loaded)</span><br>
+                        &nbsp;&nbsp;├── bin/<br>
+                        &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── darwin-arm64/ais&nbsp;<span class="cmt"># macOS Apple Silicon</span><br>
+                        &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── darwin-amd64/ais&nbsp;<span class="cmt"># macOS Intel</span><br>
+                        &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── linux-amd64/ais&nbsp;&nbsp;<span class="cmt"># Linux x86_64</span><br>
+                        &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── linux-arm64/ais&nbsp;&nbsp;<span class="cmt"># Linux ARM64</span><br>
+                        &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── windows-amd64/ais.exe<br>
+                        &nbsp;&nbsp;└── <span class="str">REFERENCE_SCOPES.md</span>&nbsp;<span class="cmt"># Scope reference</span>
+                    </div>
+                    <div style="text-align: center; margin-top: 24px;">
+                        <a href="/api/v1/skill/download" class="p-btn p-btn-primary" download>Download Skill</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-solution-flow p-reveal" style="margin-top: 16px;">
+                <h3 style="text-align:center; margin-bottom: 24px; color: var(--text);">Usage Examples</h3>
+                <div class="p-code">
+                    <span class="cmt"># Python SDK &mdash; agent can't see the API key</span><br>
+                    <span class="cmd">ais exec</span> <span class="flag">--cred</span> vcred_openai <span class="flag">--env</span> OPENAI_API_KEY=api_key <span class="flag">--</span> python my_agent.py<br><br>
+
+                    <span class="cmt"># Notion cookie injection &mdash; agent can't see the cookie</span><br>
+                    <span class="cmd">ais exec</span> <span class="flag">--cred</span> vcred_notion <span class="flag">--env</span> COOKIES=cookies <span class="flag">--</span> node notion_reader.js<br><br>
+
+                    <span class="cmt"># Multiple credentials at once</span><br>
+                    <span class="cmd">ais exec</span> <span class="flag">--cred</span> vcred_gh <span class="flag">--env</span> GH=api_key <span class="flag">\\</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="flag">--cred</span> vcred_slack <span class="flag">--env</span> SLACK=access_token <span class="flag">\\</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="flag">--</span> python multi_service.py<br><br>
+
+                    <span class="cmt"># Credential as temp file (e.g. kubeconfig) &mdash; auto-deleted after exit</span><br>
+                    <span class="cmd">ais exec</span> <span class="flag">--cred</span> vcred_k8s <span class="flag">--file</span> /tmp/.kube/config=kubeconfig_data <span class="flag">--</span> kubectl get pods
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== 6. Security ====== -->
+    <section class="p-section" id="security">
+        <div class="container">
+            <div class="p-section-header p-reveal">
+                <span class="tag">Security</span>
+                <h2>Security Is Not a Feature. It's the Baseline.</h2>
+            </div>
+
+            <div class="p-compare p-reveal" style="max-width: 960px;">
+                <div class="p-compare-col p-compare-before">
+                    <div class="p-compare-label">Without Butler</div>
+                    <table style="width:100%; font-size: 0.9rem; color: var(--text-2);">
+                        <tr><td style="padding: 8px 0;">Storage</td><td style="color:var(--danger);">Plaintext .env / pasted in prompt</td></tr>
+                        <tr><td style="padding: 8px 0;">Agent Identity</td><td style="color:var(--danger);">Shared API key, indistinguishable</td></tr>
+                        <tr><td style="padding: 8px 0;">Permissions</td><td style="color:var(--danger);">Global token, can't narrow</td></tr>
+                        <tr><td style="padding: 8px 0;">Lifetime</td><td style="color:var(--danger);">Permanent, manual rotation</td></tr>
+                        <tr><td style="padding: 8px 0;">Audit</td><td style="color:var(--danger);">None</td></tr>
+                        <tr><td style="padding: 8px 0;">Prompt Injection</td><td style="color:var(--danger);">Leaks plaintext credentials</td></tr>
+                    </table>
+                </div>
+                <div class="p-compare-col p-compare-after">
+                    <div class="p-compare-label">With Butler</div>
+                    <table style="width:100%; font-size: 0.9rem; color: var(--text-2);">
+                        <tr><td style="padding: 8px 0;">Storage</td><td style="color:var(--success);">AES-GCM encrypted vault</td></tr>
+                        <tr><td style="padding: 8px 0;">Agent Identity</td><td style="color:var(--success);">Individual Ed25519 keypair</td></tr>
+                        <tr><td style="padding: 8px 0;">Permissions</td><td style="color:var(--success);">Scoped + task-bounded</td></tr>
+                        <tr><td style="padding: 8px 0;">Lifetime</td><td style="color:var(--success);">Revoked when task ends</td></tr>
+                        <tr><td style="padding: 8px 0;">Audit</td><td style="color:var(--success);">Who + what + when + why</td></tr>
+                        <tr><td style="padding: 8px 0;">Prompt Injection</td><td style="color:var(--success);">Agent can't touch plaintext</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== 7. CTA ====== -->
+    <section class="p-cta" id="cta">
+        <div class="container">
+            <div class="p-reveal">
+                <h2>Let the Butler Guard Your Credentials</h2>
+                <p>A desktop app to manage. A single command to execute securely.<br>Your accounts, your rules.</p>
+                <div class="p-cta-actions">
+                    <a href="login.html" class="p-btn p-btn-ghost">Console</a>
+                    <a href="zh.html" class="p-btn p-btn-ghost">中文版</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== Footer ====== -->
+    <footer class="p-footer">
+        <div class="container">
+            Agent Credential Vault &mdash; The Credential Butler for AI Agents &nbsp;|&nbsp;
+            <a href="login.html">Console</a> &nbsp;|&nbsp;
+            <a href="zh.html">中文</a>
+        </div>
+    </footer>
+
+    <script src="js/product.js"></script>
+</body>
+</html>

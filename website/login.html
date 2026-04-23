@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Credential Vault — Console Login</title>
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --bg-2: #111118;
+            --bg-3: #1a1a24;
+            --surface: #1e1e2a;
+            --surface-2: #252535;
+            --border: #2a2a3a;
+            --border-2: #3a3a4f;
+            --text: #e8e8f0;
+            --text-2: #a0a0b8;
+            --text-3: #707088;
+            --primary: #6c5ce7;
+            --primary-2: #a29bfe;
+            --accent: #00cec9;
+            --accent-2: #55efc4;
+            --danger: #e17055;
+            --gradient-1: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            --gradient-3: linear-gradient(135deg, #6c5ce7, #00cec9);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 4px 24px rgba(0,0,0,0.3);
+            --mono: 'JetBrains Mono', monospace;
+            --sans: 'Noto Sans SC', 'Inter', system-ui, sans-serif;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; }
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Background glow */
+        body::before {
+            content: '';
+            position: absolute; inset: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 50% 20%, rgba(108,92,231,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0,206,201,0.06) 0%, transparent 50%);
+        }
+
+        .login-card {
+            position: relative; z-index: 1;
+            width: 440px; max-width: 92vw;
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 48px 40px;
+            box-shadow: var(--shadow);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+        .logo-icon {
+            width: 56px; height: 56px;
+            background: var(--gradient-3);
+            border-radius: 14px;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 24px; font-weight: 800; color: #fff;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(108,92,231,0.3);
+        }
+        .logo h1 {
+            font-size: 1.3rem; font-weight: 700;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        .logo p {
+            font-size: 0.85rem;
+            color: var(--text-3);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.8rem; font-weight: 600;
+            color: var(--text-2);
+            margin-bottom: 8px;
+            letter-spacing: 0.03em;
+        }
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-3);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-family: var(--mono);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color var(--transition);
+        }
+        .form-input::placeholder {
+            color: var(--text-3);
+            font-family: var(--sans);
+        }
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108,92,231,0.15);
+        }
+        .form-input.error {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 3px rgba(225,112,85,0.15);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: var(--gradient-1);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 1rem; font-weight: 600;
+            font-family: var(--sans);
+            cursor: pointer;
+            transition: all var(--transition);
+            box-shadow: 0 4px 20px rgba(108,92,231,0.3);
+        }
+        .btn-login:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 28px rgba(108,92,231,0.4);
+        }
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-msg {
+            color: var(--danger);
+            font-size: 0.8rem;
+            margin-top: 8px;
+            display: none;
+        }
+        .error-msg.show {
+            display: block;
+        }
+
+        .hint {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.8rem;
+            color: var(--text-3);
+            line-height: 1.6;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-3);
+            text-decoration: none;
+            font-size: 0.8rem;
+            margin-bottom: 24px;
+            transition: color var(--transition);
+        }
+        .back-link:hover { color: var(--primary-2); }
+
+        @media (max-width: 480px) {
+            .login-card { padding: 32px 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <a href="/website/" class="back-link">&larr; Back to home</a>
+
+        <div class="logo">
+            <div class="logo-icon">&#9670;</div>
+            <h1>Agent Credential Vault</h1>
+            <p>Console Login</p>
+        </div>
+
+        <form id="loginForm" onsubmit="return handleLogin(event)">
+            <div class="form-group">
+                <label class="form-label">Access Token</label>
+                <input
+                    class="form-input"
+                    id="tokenInput"
+                    type="password"
+                    placeholder="Paste the token from your terminal"
+                    autocomplete="off"
+                    spellcheck="false"
+                    required
+                >
+                <div class="error-msg" id="errorMsg"></div>
+            </div>
+            <button class="btn-login" type="submit" id="submitBtn">Enter Console</button>
+        </form>
+
+        <div class="hint">
+            Start Agent Credential Vault and copy the Access Token shown in the terminal.
+        </div>
+    </div>
+
+    <script>
+    async function handleLogin(e) {
+        e.preventDefault();
+        const token = document.getElementById('tokenInput').value.trim();
+        const errorEl = document.getElementById('errorMsg');
+        const btn = document.getElementById('submitBtn');
+        const input = document.getElementById('tokenInput');
+
+        if (!token) {
+            showError('Please enter a token');
+            return false;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Verifying...';
+        errorEl.classList.remove('show');
+        input.classList.remove('error');
+
+        try {
+            const resp = await fetch('/api/internal/agents', {
+                headers: { 'X-Console-Token': token }
+            });
+
+            if (resp.ok) {
+                window.location.href = '/?token=' + encodeURIComponent(token);
+            } else {
+                showError('Invalid token. Please check and try again.');
+            }
+        } catch (err) {
+            showError('Cannot connect to server.');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Enter Console';
+        }
+
+        return false;
+    }
+
+    function showError(msg) {
+        const errorEl = document.getElementById('errorMsg');
+        const input = document.getElementById('tokenInput');
+        errorEl.textContent = msg;
+        errorEl.classList.add('show');
+        input.classList.add('error');
+        input.focus();
+    }
+
+    // If token already in sessionStorage, go directly
+    const existing = sessionStorage.getItem('ais-console-token');
+    if (existing) {
+        fetch('/api/internal/agents', { headers: { 'X-Console-Token': existing } })
+            .then(r => { if (r.ok) window.location.href = '/?token=' + encodeURIComponent(existing); });
+    }
+    </script>
+</body>
+</html>
