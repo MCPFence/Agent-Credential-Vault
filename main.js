@@ -7,7 +7,8 @@ const fs = require('fs');
 const port = process.env.AIS_PORT || 8400;
 const consoleToken = crypto.randomBytes(32).toString('hex');
 
-const server = createServer('', port, consoleToken);
+const dataDir = process.env.AIS_DATA_DIR || path.join(__dirname, 'data');
+const server = createServer(dataDir, port, consoleToken);
 
 // Product website — public, no auth required
 server.app.use('/website', require('express').static(path.join(__dirname, 'website')));

@@ -48,12 +48,30 @@ AIS="${SKILL_DIR}/bin/${OS}-${ARCH}/ais"
 - `--app ID` — application identifier for identity binding (default: ais-cli, or $AIS_APP_ID)
 - `--json` — JSON output (always use for scripts/agents)
 
+### ⚠ Critical: `--app` must match on every invocation
+
+An identity registered with `--app claude-code` is bound to that app ID on disk.
+**Every subsequent call** (load / verify / whoami / task / vault / exec) must use the **same** `--app`,
+otherwise you get `app binding mismatch` or `No agent identity loaded`.
+
+**Recommended**: set `AIS_APP_ID` once per session so you can omit `--app` afterwards:
+
+```bash
+export AIS_APP_ID=claude-code          # set once per shell session
+ais register MyBot --json              # registers with app=claude-code
+ais load MyBot                         # works — AIS_APP_ID honored
+ais whoami --json                      # works — no --app needed
+```
+
+Without the env var, you must pass `--app claude-code` on **every** command below.
+
 ---
 
 ## Full Workflow
 
 ```
-1. Register identity  →  ais register <name> --app <app_id> --json
+export AIS_APP_ID=claude-code          # set once — avoids --app on every call
+1. Register identity  →  ais register <name> --json
 2. Load identity      →  ais load <name> (remembers last used identity)
 3. Verify identity    →  ais verify --json
 4. Start task         →  ais task start --type <type> --scopes <s1,s2> --json
@@ -71,7 +89,10 @@ AIS="${SKILL_DIR}/bin/${OS}-${ARCH}/ais"
 Each agent identity is bound to **one device + one application**. Identity files cannot be copied to other machines or used by other applications.
 
 ```bash
-ais register EmailBot --app claude-code --desc "Email assistant" --json
+# Make sure AIS_APP_ID is set (or pass --app on every command)
+export AIS_APP_ID=claude-code
+
+ais register EmailBot --desc "Email assistant" --json
 ```
 
 Returns:
@@ -236,6 +257,7 @@ All credential access is immediately revoked. Audit log records task completion.
 User: "Summarize today's emails and send to Slack"
 
 My approach:
+0. Set app → export AIS_APP_ID=claude-code   # must match register --app
 1. Identity → ais load EmailBot && ais verify --json
 2. Start task → ais --json task start --type email_summary --scopes "read:email,write:slack"
 3. Check grants → granted? Continue. Denied? Inform user or degrade gracefully
@@ -299,9 +321,9 @@ My approach:
 | Error | Cause | Resolution |
 |-------|-------|------------|
 | `ais verify` returns non-active | Suspended by owner or key mismatch | Check `ais whoami --json` |
-| "No agent identity loaded" | No identity loaded, or device/app binding mismatch | `ais register` or check `--app` flag |
+| "No agent identity loaded" | Missing `--app` (or `AIS_APP_ID`) — CLI looked under wrong app and found nothing | Export `AIS_APP_ID=<app>` or pass `--app <app>` matching the one used at register time |
+| "app binding mismatch" | Another application tried to use this identity, or `--app` differs from register | Use the same `--app` as register, or set `AIS_APP_ID` |
 | "device binding mismatch" | Identity file was copied to another machine | Re-register on current device |
-| "app binding mismatch" | Another application tried to use this identity | Use correct `--app` or re-register |
 | "No active task" | Called exec without starting a task | Start a task first |
 | Scope denied | capabilities/ceiling/policy restriction | Check denied_scopes for the reason |
 | Connection refused | AIS server unreachable | Check `--server` address, run `ais health` |
